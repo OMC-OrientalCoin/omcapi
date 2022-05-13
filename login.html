@@ -1,0 +1,199 @@
+<?php
+
+	include "./mobile_check.php";
+
+	$obj = new module();
+
+
+
+	if($obj -> mobileConcertCheck() == "mobile") {
+
+		echo "현재 보고계신 화면은 모바일 입니다.";
+
+	} else {
+
+		echo "현재 보고계신 화면은 컴퓨터 입니다.";
+
+	}
+
+?>
+<html lang="en">
+
+<head>
+	<style type="text/css">
+		body {font-size: 14px;}
+		button{font-size: 10px;margin-top: 4px; margin-right: 20px;}
+
+		.wrap{width:96%; height: auto;display: block; }
+		.content_wrap{width:540px; height: auto;display: block; margin: 0 auto;margin-top: 20px;}
+		.content_body{width:96%; height: auto;display: block;  }
+		.cellLabel{width:15%; height: auto; display: inline-block; }
+		.cellField{width:83%; height: auto;display: block; display: inline-block;}
+		.cellField_btn{  height: auto;display: block; display: inline-block; padding: 10px 2px;}
+		.inputField{width:200px; height: auto; padding: 2px;margin:2px;  }
+
+		.subtile{font-size: 12px;font-weight: bold; border-bottom: 1px solid #DADADA; padding: 4px 0px;margin: 30px 0px 4px;}
+
+	</style>
+
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script> 
+	<script type="text/javascript">
+		$(function()
+		{  
+
+			var filter = "win16|win32|win64|mac|macintel";
+
+			if ( navigator.platform ) { 
+				if ( filter.indexOf( navigator.platform.toLowerCase() ) < 0 ) { 
+					//mobile 
+					$(location).attr('href',"m_mypage.html");
+				} else { 
+					//pc 
+					alert('pc 접속'); 
+				} 
+			}
+
+
+
+
+			$("#btn_login").on('click', function (e) 
+			{   
+				let userID = $('#userID').val();
+				let userPassword = $('#userPassword').val();
+
+				if(!userID){alert("아이디를  입력해 주세요. "); $('#userID').focus(); return false;}
+				if(!userPassword){alert("비밀번호를 입력해 주세요. "); $('#userPassword').focus(); return false;} 
+
+				login(userID,userPassword);
+				
+
+	  		});// $("#btn_genWallet").on('click', function (e)  
+
+			$("#btn_join").on('click', function (e) 
+			{   
+			//회원가입 
+			$(location).attr('href',"joinForm.html");
+
+	  		});// $("#btn_genWallet").on('click', function (e) 
+
+			//alert(" 아이디찾기 이동 ");  
+			$("#btn_findID").on('click', function (e) 
+			{   
+				$(location).attr('href',"findID.html");
+	  		});//  
+
+			//
+			$("#btn_findPasswd").on('click', function (e) 
+			{    	
+				$(location).attr('href',"findPW.html");
+	  		});//  
+ 		});//jquery 
+
+
+		function setCookie(cookieName, value, exdays){
+			var exdate = new Date();
+			exdate.setDate(exdate.getDate() + exdays);
+			var cookieValue = escape(value) + ((exdays==null) ? "" : "; expires=" + exdate.toGMTString());
+			document.cookie = cookieName + "=" + cookieValue;
+	}//setCookie
+
+	function deleteCookie(cookieName){
+		var expireDate = new Date();
+		expireDate.setDate(expireDate.getDate() - 1);
+		document.cookie = cookieName + "= " + "; expires=" + expireDate.toGMTString();
+	}//deleteCookie
+
+	function getCookie(cookieName) 
+	{
+
+		cookieName = cookieName + '=';
+		var cookieData = document.cookie;
+		var start = cookieData.indexOf(cookieName);
+		var cookieValue = '';
+
+		if(start != -1){
+			start += cookieName.length;
+			var end = cookieData.indexOf(';', start);
+			if(end == -1)end = cookieData.length;
+			cookieValue = cookieData.substring(start, end);
+		}
+		return unescape(cookieValue);
+	}
+
+	function login(userID,userPW)
+	{
+
+		//var kind = $(':radio[name="kind"]:checked').val(); 
+		let params = { "userID":userID,"userPassword":userPW};
+		let goURL = "";
+
+		var returnValue = $.ajax({
+			type: "POST",
+			url: "/module/login.php",
+			data: params,
+			async: false
+		}).responseText; 
+
+console.log("login -->",returnValue)
+
+		if(Number(returnValue)>0 )
+		{  
+			if(userID == "manager"){
+				goURL = "front.html";
+			}else{
+				goURL = "mypage.html";
+			}
+
+			$(location).attr('href', goURL);
+
+		}else{ 
+			alert("Login Error\n로그인 정보를 확인하시거나 관리자에게 문의하여 주십시요.");
+			return false;
+		}
+	}//login()
+
+
+</script>
+</head>
+<body>
+
+	<div id="" class="wrap">
+		<div id="" class="content_wrap"> 
+			<div id="" class="content_wrap" style="margin-bottom: 30px; ">
+				<div id="" class="content_wrap" style="font-size: 22px; font-weight: bold; border-bottom: 1px solid #000; ">omcwallet.net </div>
+			</div> 
+
+			<div id="" class="content_wrap">
+				<div id="" class="content_body subtile" style="font-size: 18px; font-weight: bold;">로그인  </div>
+
+				<div id="" class="content_body">
+					<div id="" class="cellLabel">아이디</div>
+					<div id="" class="cellField"><input type="text" id="userID" name="userID"  class="inputField" /></div>
+				</div>
+
+				<div id="" class="content_body">
+					<div id="" class="cellLabel">비밀번호</div>
+					<div id="" class="cellField"><input type="password" id="userPassword" name="userPassword"  class="inputField" /></div>
+				</div> 
+
+				<div id="" class="content_body" style=" text-align: center;  margin: 20px 0px;" > 
+					<button id="btn_login" class="inputField" style="font-size: 14px; text-align: center; width: 120px;" > 로그인 </button>
+				</div> 
+			</div>
+
+			<div id="" class="content_body" style="    margin-top: 20px; border-top: 1px solid #DADADA; " > 
+				<div id="btn_join" class="cellField_btn">회원가입</div>
+				<div id="" class="" style="width:  200px;display: inline-block;" > &nbsp;</div>
+				<div id="btn_findID" class="cellField_btn">아이디찾기</div> |
+				<div id="btn_findPasswd" class="cellField_btn">비밀번호찾기 </div>
+
+			</div> 
+
+		</div>
+	</div>
+</body>
+</html>
+

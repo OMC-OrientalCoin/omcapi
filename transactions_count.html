@@ -1,0 +1,170 @@
+	<html lang="en">
+	<head>
+				<link rel="stylesheet" href="css/omc.css" type="text/css"   rel="stylesheet">
+
+		<script
+		src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script> 
+		<script type="text/javascript">
+			$(function()
+			{ 
+
+				$('#trans_menu').load("trans_menu.html");  
+				let deal= 0;
+				let address ="0x804a87d02f1608c3c27b755f4d645bcabab76b14";
+				$("#address").html(address)
+				//addr, 
+				 getTransactionCount("transaction_count",address);
+
+ 
+
+
+			});//jquery
+/*setInterval(function() {
+ 
+				getTransactionList("t_list");
+					
+				}, 1000);*/
+
+			 
+			 
+			 function blockInfoFunc(divID)
+			 {  
+
+				//var path = pathfunc();
+
+				var jURL   = "/module/getBlockNumber.php";
+				var params = { param:""};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				var obj = $.parseJSON(returnValue); 
+
+				var dec = parseInt(obj.result, 16);
+
+				$("#"+divID).html(dec);
+
+			}//blockInfo
+
+			function getTransactionCount(divID, address)
+			{   
+				var jURL   = "/module/eth_getTransactionCount.php";
+				var params = { address:address};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				var obj = $.parseJSON(returnValue); 
+				var transaction_count = parseInt(obj.result, 16);
+
+
+
+				$("#"+divID).html(obj.result +" | "+ transaction_count +"건"); 
+			}//getTransaction
+
+ 
+
+			function eth_getBlockByNumber_Data(BlockNumber)
+			{  
+ 
+				var jURL   = "/module/eth_getBlockByNumber.php";
+				var params = { BlockNumber:BlockNumber};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				var obj = $.parseJSON(returnValue);  
+				blockDetail(obj.result)
+			}
+
+
+			function getTransactionList(divID)
+			{  
+ 
+
+
+       let tmpForm ="";
+       for(var i=0;i<10;i++)
+       {  
+       	tmpForm += "<div style='width: 100%;height: 44px; border-bottom:1px solid #dadada; padding: 10px; '>";
+       	tmpForm += "        <div id='' class='' style='width: 100%;display:  block;'>";
+       	tmpForm += "          <div id='' class=' ' style='width: 5%;display: inline-block;'>TX</div>";
+       	tmpForm += "          <div id='userID' class='' style='width: 52%;display: inline-block;'> 0xd3c50a7631bcd76...</div>";
+       	tmpForm += "          <div id='userID' cclass='' style='width: 40%;display: inline-block; text-align: right;'> a few seconds ago</div>";
+       	tmpForm += "        </div>  ";
+   	/*tmpForm += "        <div id='' class=''>";
+   	tmpForm += "          <div id='MyWalletAddress1' class='' style='width: 40%;display: inline-block;'>보낸이</div> ";
+   	tmpForm += "          <div id='MyWalletAddress1' class='' style='width: 40%;display: inline-block;'>받은이</div>";
+   	tmpForm += "          <div id='' class='' 				  style='width: 17%;display: inline-block;'>OMC 수령</div>";
+   	tmpForm += "    </div>  ";*/
+   	tmpForm += "        <div id='' class=''>";
+   	tmpForm += "          <div id='MyWalletAddress1' class='' style='width: 38%;display: inline-block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;'>F : 0x1e45cd2c09fe1363e6e95633079e448179aabb65</div> ";
+   	tmpForm += "          <div id='MyWalletAddress1' class='' style='width: 38%;display: inline-block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;'>T : 0x7f82913eaa2679461f01d5278c533e59fdb4a2b7</div>";
+   	tmpForm += "          <div id='' class='' style='width: 5%;display: inline-block;'> </div>";
+   	tmpForm += "          <div id='' class='' style='width: 15%;display: inline-block;'>3000 OMC</div>";
+   	tmpForm += "    </div>  ";
+   	tmpForm += "</div> ";
+
+}//for
+$("#"+divID).html(tmpForm)
+} 
+
+ 
+
+
+function addCommas(x) {
+	x = x?x:0;
+	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+}
+
+</script>
+</head>
+<body>
+
+	<div id="" class="wrap">
+		<div id="" class="content_wrap"> 
+			<div id="" class="content_wrap" style="margin-bottom: 30px; ">
+				<div id="" class="content_wrap" style="font-size: 22px; font-weight: bold; border-bottom: 1px solid #000; ">omcapi.net / Transactions Count</div>
+			</div>
+<div id="trans_menu" class="content_wrap"  style="margin-bottom: 30px; "> </div>  
+		</div>
+
+		<div id="" class="content_wrap">
+			<div id="" class="content_body subtile">거래내역</div> 
+			<div id="" class="content_body">
+				<div id="" class="cellLabel ">지갑주소</div>
+				<div id="address" class="cellField"> 	</div>
+			</div>
+			<div id="" class="content_body">
+				<div id="" class="cellLabel ">거래건 수</div>
+				<div id="transaction_count" class="cellField"> 	</div>
+			</div>
+
+			<div id="" class="content_body" style="top;margin-top: 20px;">
+				<div id="" class="cellLabel " style="vertical-align: top;">거래 목록</div>
+				<div id="deal1" class="cellField"> 	</div>
+			</div>
+
+			<div id="" class="content_body subtile">List</div> 
+			<div id="deal_list" class="content_body"></div> 
+			<!--  -->
+		</div>
+	</div>
+
+</body>
+</html>

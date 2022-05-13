@@ -1,0 +1,268 @@
+	<html lang="en">
+	<head>
+		<link rel="stylesheet" href="css/omc.css" type="text/css"   rel="stylesheet" />
+
+		<script
+		src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script> 
+		<script type="text/javascript" src="/js/jsFunc.js"></script>
+		<script type="text/javascript">
+			$(function()
+			{   
+
+				$('#trans_menu').load("trans_menu.html");  
+
+				$("#btn_find").on('click', function (e) 
+				{   
+					let blockNumber = $("#blockNumber").val();
+
+					if(blockNumber)
+						eth_getBlockByNumber_Data(blockNumber);
+					else
+					{
+						alert("블록번호를 입력해 주세요");
+						$("#blockNumber").focus();
+
+						return false;
+
+					}
+				}); 
+
+			});//jquery
+
+			 /* alert(path)
+			 document.location.href.match(/(?<=https?:\/\/)(.*?)(?=$|[\/?\&])/)[*/
+			 function blockInfoFunc(divID)
+			 {  
+
+				//var path = pathfunc();
+
+				var jURL   = "/module/getBlockNumber.php";
+				var params = { param:""};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				var obj = $.parseJSON(returnValue); 
+
+				var dec = parseInt(obj.result, 16);
+
+				$("#"+divID).html(dec);
+
+			}//blockInfo
+
+			function eth_getBlockByNumber_Data(BlockNumber)
+			{  
+
+				let chgBlockNumber = Number(BlockNumber).toString(16);
+
+
+				console.log("chgBlockNumber --->",BlockNumber +"|"+ chgBlockNumber )
+
+				var jURL   = "/module/eth_getBlockByNumber_find.php";
+				var params = { BlockNumber: chgBlockNumber};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+
+				console.log("blockDetail --->",BlockNumber +"|"+ returnValue )
+
+
+				var obj = $.parseJSON(returnValue);  
+				blockDetail(obj.result)
+			}
+
+
+
+			function blockDetail(data) {
+				console.log("blockDetail --->",  data )
+
+				let timestamp = parseInt(data.timestamp, 16)
+				var date = new Date(timestamp*1000);
+				console.log('year is ',timestamp +"|"+ date.toLocaleDateString());
+
+
+
+				let tmpForm ="";
+
+				tmpForm += "<div id='' class=''>";
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>number</div>";
+				tmpForm += "   		<div id='number' class='cellField' style='font-weight:bold;'>"+data.number+ " | "+  parseInt(data.number, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>timestamp</div>";
+				tmpForm += "   		<div id='timestamp' class='cellField'>"+data.timestamp+ " | "+  date.toLocaleString()+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "	<div id='' class='content_body'>";
+				tmpForm += "		<div id='' class='cellLabel'>difficulty</div>";
+				tmpForm += "   		<div id='difficulty' class='cellField'>"+data.difficulty+ " | "+  parseInt(data.difficulty, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>extraData</div>";
+				tmpForm += "   		<div id='extraData' class='cellField'>"+data.extraData+ "|"+  parseInt(data.extraData, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "  	<div id='' class='content_body'>";
+				tmpForm += "  		<div id='' class='cellLabel'>gasLimit</div>";
+				tmpForm += "  		<div id='gasLimit' class='cellField'>"+data.gasLimit+ " | "+  parseInt(data.gasLimit, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "  		<div id='' class='cellLabel'>gasUsed</div>";
+				tmpForm += "   		<div id='gasUsed' class='cellField'>"+data.gasUsed+ " | "+  parseInt(data.gasUsed, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "  	<div id='' class='content_body'>";
+				tmpForm += "  		<div id='' class='cellLabel'>hash</div>";
+				tmpForm += "  		<div id='hash' class='cellField'>"+data.hash+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'  >";
+				tmpForm += "   		<div id='' class='cellLabel ' style='vertical-align:top;'>logsBloom</div>";
+				tmpForm += "   		<div id='logsBloom' class='cellField' style='height:auto; word-break:break-all;'>"+data.logsBloom+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>miner</div>";
+				tmpForm += "   		<div id='miner' class='cellField'>"+data.miner+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "  		<div id='' class='cellLabel'>mixHash</div>";
+				tmpForm += "  		<div id='mixHash' class='cellField'>"+data.mixHash+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>nonce</div>";
+				tmpForm += "   		<div id='nonce' class='cellField'>"+data.nonce+ " | "+  parseInt(data.nonce, 16)+"</div>";
+				tmpForm += "	</div>";
+
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>parentHash</div>";
+				tmpForm += "   		<div id='parentHash' class='cellField'>"+data.parentHash+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>receiptsRoot</div>";
+				tmpForm += "   		<div id='receiptsRoot' class='cellField'>"+data.receiptsRoot+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>sha3Uncles</div>";
+				tmpForm += "   		<div id='sha3Uncles' class='cellField'>"+data.sha3Uncles+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>size</div>";
+				tmpForm += "   		<div id='size' class='cellField'>"+data.size+ " | "+  parseInt(data.size, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>stateRoot</div>";
+				tmpForm += "   		<div id='stateRoot' class='cellField'>"+data.stateRoot+"</div>";
+				tmpForm += "	</div>";  
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>totalDifficulty</div>";
+				tmpForm += "   		<div id='totalDifficulty' class='cellField'>"+data.totalDifficulty+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>transactions</div>";
+				tmpForm += "   		<div id='transactions' class='cellField'>"+data.transactions+"</div>";
+				tmpForm += "  	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>transactionsRoot</div>";
+				tmpForm += "   		<div id='transactionsRoot' class='cellField'>"+data.transactionsRoot+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>uncles</div>";
+				tmpForm += "   		<div id='uncles' class='cellField'>"+data.uncles+"</div>";
+				tmpForm += "  	</div>";
+				tmpForm += "</div>";
+
+
+
+				$("#blockInfo").html(tmpForm)
+			}
+
+
+
+
+			function addCommas(x) {
+				x = x?x:0;
+				return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+			}
+
+		</script>
+	</head>
+	<body>
+
+		<div id="" class="wrap">
+			<div id="" class="content_wrap"> 
+				<div id="" class="content_wrap" style="margin-bottom: 30px; ">
+					<div id="" class="content_wrap" style="font-size: 22px; font-weight: bold; border-bottom: 1px solid #000; ">omcapi.net / OMC Block Data</div>
+				</div> 
+
+				<div id="trans_menu" class="content_wrap"  style="margin-bottom: 30px; "> </div>
+			</div>
+
+			<div id="" class="content_wrap">
+				<div id="" class="content_body_ex subtile">OMC 블록 정보</div> 
+				<div id="" class="content_body_ex">
+					<div id="" class="cellLabel ">OMC 블록번호 </div>
+					<div id="" class="cellField" >
+						<input type="text" id="blockNumber" name="blockNumbe" />
+						<input type="button" id="btn_find" name="btn_find" value=" FIND " />
+					</div>
+				</div>
+
+				<div id="" class="content_body_ex">
+				
+ OMC 블록헤더의 구성요소<br/>
+OMC 부모해시(parentHash) : 부모 블록의 해시값<br/>
+OMC 엉클해시(uncleHash) : 현재 블록의 엉클 블록들의 해시값<br/>
+OMC 주소(beneficiary) : 채굴 후 해당 트랜잭션의 수수료를 받을 계정 주소<br/>
+OMC 상태루트(stateRoot) : 계정의 상태정보가 모여있는 머클 패트리시아 트리의 루트 노드 해시값<br/>
+OMC 트랜잭션루트(transactionsRoot) : 블록의 모든 트랜잭션에 대한 머클트리의 루트노드 해시값<br/>
+OMC 영수증루트(receiptsRoot) : 해당 블록 내 모든 트랜잭션에 대한 일종의 영수증 머클트리의 루트노드 해시값<br/>
+OMC 로그블룸(logsBloom) : 로그 정보를 사용하는데 필요한 32바이트 블룸필터<br/>
+OMC 난이도(difficulity) : 블록 생성 난이도<br/>
+OMC 블록번호(number) : 해당 블록 번호<br/>
+OMC 가스한도(gasLimit) : 블록 당 지급 가능한 최대 가스의 제한량<br/>
+OMC 사용된 가스(gasUsed) : 해당 블록 내 트랜잭션에 사용된 가스의 총합<br/>
+OMC 타임테이블(time : 해당 블록의 최초 생성시간<br/>
+OMC 믹스해시, 논스(mixHash, nonce : 해당 블록이 충분한 연산을 했음을 입증하는 해시값<br/>
+OMC 기타(extra) : 블록의 기타 정보<br/>
+<br/>
+
+				</div>
+
+				<div id="" class="content_body_ex" style="top;margin-top: 20px;">
+					<div id="" class="cellLabel " style="vertical-align: top;">OMC 블록정보</div>
+					<div id="blockInfo" class=""> 	</div>
+				</div>
+
+			</div>
+		</div>
+
+	</body>
+	</html>

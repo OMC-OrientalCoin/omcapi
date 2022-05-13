@@ -1,0 +1,236 @@
+	<html lang="en">
+	<head>
+		<link rel="stylesheet" href="css/omc.css" type="text/css"   rel="stylesheet" />
+
+		<script
+		src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script> 
+		<script type="text/javascript" src="/js/jsFunc.js"></script>
+		<script type="text/javascript">
+			$(function()
+			{  
+				$('#trans_menu').load("trans_menu.html");
+
+			});//jquery
+
+			setInterval(function() {
+
+				blockInfoFunc("blockNumber_last");
+
+				let blockInfo = $("#blockNumber_last").html(); 
+				eth_getBlockByNumber_Data(blockInfo); 
+
+			}, 1000);
+
+			function pathfunc()
+			{
+				var path = window.location.pathname;
+				var url      = path.split("/")
+
+				//alert(path+"|"+url[1])
+				return url[0];
+			}
+			 /* alert(path)
+			 document.location.href.match(/(?<=https?:\/\/)(.*?)(?=$|[\/?\&])/)[*/
+			 function blockInfoFunc(divID)
+			 {  
+
+				//var path = pathfunc();
+
+				var jURL   = "/module/getBlockNumber.php";
+				var params = { param:""};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				var obj = $.parseJSON(returnValue); 
+
+				var dec = parseInt(obj.result, 16);
+
+				$("#"+divID).html(dec);
+
+			}//blockInfo
+
+			function eth_getBlockByNumber_Data(BlockNumber)
+			{  
+
+
+
+				var jURL   = "/module/eth_getBlockByNumber.php";
+				var params = { BlockNumber:BlockNumber};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				var obj = $.parseJSON(returnValue);  
+				blockDetail(obj.result)
+			}
+
+
+
+			function blockDetail(data) {
+				console.log("blockDetail --->", data )
+
+				let timestamp = parseInt(data.timestamp, 16)
+				var date = new Date(timestamp*1000);
+				console.log('year is ',timestamp +"|"+ date.toLocaleDateString());
+
+
+
+				let tmpForm ="";
+
+				tmpForm += "<div id='' class=''>";
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>number</div>";
+				tmpForm += "   		<div id='number' class='cellField' style='font-weight:bold;'>"+data.number+ " | "+  parseInt(data.number, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>timestamp</div>";
+				tmpForm += "   		<div id='timestamp' class='cellField'>"+data.timestamp+ " | "+  date.toLocaleString()+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "	<div id='' class='content_body'>";
+				tmpForm += "		<div id='' class='cellLabel'>difficulty</div>";
+				tmpForm += "   		<div id='difficulty' class='cellField'>"+data.difficulty+ " | "+  parseInt(data.difficulty, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>extraData</div>";
+				tmpForm += "   		<div id='extraData' class='cellField'>"+data.extraData+ "|"+  parseInt(data.extraData, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "  	<div id='' class='content_body'>";
+				tmpForm += "  		<div id='' class='cellLabel'>gasLimit</div>";
+				tmpForm += "  		<div id='gasLimit' class='cellField'>"+data.gasLimit+ " | "+  parseInt(data.gasLimit, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "  		<div id='' class='cellLabel'>gasUsed</div>";
+				tmpForm += "   		<div id='gasUsed' class='cellField'>"+data.gasUsed+ " | "+  parseInt(data.gasUsed, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "  	<div id='' class='content_body'>";
+				tmpForm += "  		<div id='' class='cellLabel'>hash</div>";
+				tmpForm += "  		<div id='hash' class='cellField'>"+data.hash+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'  >";
+				tmpForm += "   		<div id='' class='cellLabel ' style='vertical-align:top;'>logsBloom</div>";
+				tmpForm += "   		<div id='logsBloom' class='cellField' style='height:auto; word-break:break-all;'>"+data.logsBloom+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>miner</div>";
+				tmpForm += "   		<div id='miner' class='cellField'>"+data.miner+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "  		<div id='' class='cellLabel'>mixHash</div>";
+				tmpForm += "  		<div id='mixHash' class='cellField'>"+data.mixHash+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>nonce</div>";
+				tmpForm += "   		<div id='nonce' class='cellField'>"+data.nonce+ " | "+  parseInt(data.nonce, 16)+"</div>";
+				tmpForm += "	</div>";
+
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>parentHash</div>";
+				tmpForm += "   		<div id='parentHash' class='cellField'>"+data.parentHash+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>receiptsRoot</div>";
+				tmpForm += "   		<div id='receiptsRoot' class='cellField'>"+data.receiptsRoot+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>sha3Uncles</div>";
+				tmpForm += "   		<div id='sha3Uncles' class='cellField'>"+data.sha3Uncles+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>size</div>";
+				tmpForm += "   		<div id='size' class='cellField'>"+data.size+ " | "+  parseInt(data.size, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>stateRoot</div>";
+				tmpForm += "   		<div id='stateRoot' class='cellField'>"+data.stateRoot+"</div>";
+				tmpForm += "	</div>";  
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>totalDifficulty</div>";
+				tmpForm += "   		<div id='totalDifficulty' class='cellField'>"+data.totalDifficulty+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>transactions</div>";
+				tmpForm += "   		<div id='transactions' class='cellField'>"+data.transactions+"</div>";
+				tmpForm += "  	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>transactionsRoot</div>";
+				tmpForm += "   		<div id='transactionsRoot' class='cellField'>"+data.transactionsRoot+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>uncles</div>";
+				tmpForm += "   		<div id='uncles' class='cellField'>"+data.uncles+"</div>";
+				tmpForm += "  	</div>";
+				tmpForm += "</div>";
+
+
+
+				$("#blockInfo").html(tmpForm)
+			}
+
+
+
+
+			function addCommas(x) {
+				x = x?x:0;
+				return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+			}
+
+		</script>
+	</head>
+	<body>
+
+		<div id="" class="wrap">
+			<div id="" class="content_wrap"> 
+				<div id="" class="content_wrap" style="margin-bottom: 30px; ">
+					<div id="" class="content_wrap" style="font-size: 22px; font-weight: bold; border-bottom: 1px solid #000; ">omcapi.net / Block Data</div>
+				</div> 
+				<div id="trans_menu" class="content_wrap"  style="margin-bottom: 30px; "> </div> 
+			</div>
+
+			<div id="" class="content_wrap">
+				<div id="" class="content_body_ex subtile">최근 생성 블록 정보</div> 
+				<div id="" class="content_body_ex">
+					<div id="" class="cellLabel ">블록수 [latest]</div>
+					<div id="blockNumber_last" class="cellField subtile"> </div>
+				</div>
+
+				<div id="" class="content_body_ex" style="top;margin-top: 20px;">
+					<div id="" class="cellLabel " style="vertical-align: top;">블록정보</div>
+					<div id="blockInfo" class=""> 	</div>
+				</div>
+
+			</div>
+		</div>
+
+	</body>
+	</html>

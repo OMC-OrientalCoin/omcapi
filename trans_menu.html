@@ -1,0 +1,30 @@
+  <script type="text/javascript">
+    $(function()
+    { 
+
+      $("#trans").on('click',".navi", function (e) 
+      {   
+        var thisID = $(this).attr('id'); 
+        var goPage ="";
+
+        switch(thisID)
+        {
+          case "L" : goPage = "transactions_list.html"; break;
+          case "C" : goPage = "transactions_count.html"; break; 
+          case "G" : goPage = "transactions_get.html"; break; 
+          case "F" : goPage = "blockdata_find.html"; break;
+          case "D" : goPage = "blockdata.html"; break;
+        } 
+
+        $(location).attr('href', goPage);
+      }); 
+   });//jquery
+  </script>
+
+  <div id="trans" class="content_wrap"  style="margin-bottom: 30px; ">
+    <div id="L" class="navi">list</div>
+    <div id="C" class="navi">count</div>
+    <div id="G" class="navi">get</div>
+    <div id="F" class="navi">blockdata_find</div>
+    <div id="D" class="navi">blockdata </div>  
+  </div>  

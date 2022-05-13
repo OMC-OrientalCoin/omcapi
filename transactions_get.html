@@ -1,0 +1,281 @@
+	<html lang="en">
+	<head>
+		<link rel="stylesheet" href="css/omc.css" type="text/css"   rel="stylesheet" /> 
+		<script
+		src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script> 
+		<script type="text/javascript">
+			$(function()
+			{ 
+				$('#trans_menu').load("trans_menu.html");   
+
+				$("#btn_findTransation").on('click', function (e) 
+				{   
+					let transation_hash = $("#transation_hash").val();
+
+					if(transation_hash)
+					{
+						getTransaction(transation_hash);
+					}else{
+						alert("transation_hash를 입력해 주세요");
+						$("#transation_hash").focus();
+
+						return false;
+
+					}
+				}); 
+
+
+
+			});//jquery
+/*setInterval(function() {
+ 
+				getTransactionList("t_list");
+					
+			}, 1000);*/
+
+
+
+			function blockInfoFunc(divID)
+			{  
+
+				//var path = pathfunc();
+
+				var jURL   = "/module/getBlockNumber.php";
+				var params = { param:""};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				var obj = $.parseJSON(returnValue); 
+
+				var dec = parseInt(obj.result, 16);
+
+				$("#"+divID).html(dec);
+
+			}//blockInfo
+
+			function getTransaction(hash)
+			{   
+				console.log("getTransaction hash",hash)
+
+
+				var jURL   = "/module/eth_getTransactionByHash.php";
+				var params = { hash:hash};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+
+				console.log("getTransaction",returnValue)
+
+				var obj = $.parseJSON(returnValue);  
+				transactionData(obj.result)
+
+
+			}//getTransaction
+
+
+
+
+			function eth_getBlockByNumber_Data(BlockNumber)
+			{   
+
+				var jURL   = "/module/eth_getBlockByNumber.php";
+				var params = { BlockNumber:BlockNumber};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				var obj = $.parseJSON(returnValue);  
+				blockDetail(obj.result)
+			}
+
+
+			function getTransactionList(divID)
+			{  
+
+
+
+				let tmpForm ="";
+				for(var i=0;i<10;i++)
+				{  
+					tmpForm += "<div style='width: 100%;height: 44px; border-bottom:1px solid #dadada; padding: 10px; '>";
+					tmpForm += "        <div id='' class='' style='width: 100%;display:  block;'>";
+					tmpForm += "          <div id='' class=' ' style='width: 5%;display: inline-block;'>TX</div>";
+					tmpForm += "          <div id='userID' class='' style='width: 52%;display: inline-block;'> 0xd3c50a7631bcd76...</div>";
+					tmpForm += "          <div id='userID' cclass='' style='width: 40%;display: inline-block; text-align: right;'> a few seconds ago</div>";
+					tmpForm += "        </div>  ";
+				   	/*tmpForm += "        <div id='' class=''>";
+				   	tmpForm += "          <div id='MyWalletAddress1' class='' style='width: 40%;display: inline-block;'>보낸이</div> ";
+				   	tmpForm += "          <div id='MyWalletAddress1' class='' style='width: 40%;display: inline-block;'>받은이</div>";
+				   	tmpForm += "          <div id='' class='' 				  style='width: 17%;display: inline-block;'>OMC 수령</div>";
+				   	tmpForm += "    </div>  ";*/
+				   	tmpForm += "        <div id='' class=''>";
+				   	tmpForm += "          <div id='MyWalletAddress1' class='' style='width: 38%;display: inline-block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;'>F : 0x1e45cd2c09fe1363e6e95633079e448179aabb65</div> ";
+				   	tmpForm += "          <div id='MyWalletAddress1' class='' style='width: 38%;display: inline-block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;'>T : 0x7f82913eaa2679461f01d5278c533e59fdb4a2b7</div>";
+				   	tmpForm += "          <div id='' class='' style='width: 5%;display: inline-block;'> </div>";
+				   	tmpForm += "          <div id='' class='' style='width: 15%;display: inline-block;'>3000 OMC</div>";
+				   	tmpForm += "    </div>  ";
+				   	tmpForm += "</div> ";
+
+				}//for
+
+				$("#"+divID).html(tmpForm)
+			} 
+
+
+			function transactionData(data) {
+				console.log("transactionData --->",  data )
+
+				let timestamp = parseInt(data.timestamp, 16)
+				var date = new Date(timestamp*1000);
+				console.log('year is ',timestamp +"|"+ date.toLocaleDateString());
+
+
+
+				let tmpForm ="";
+
+				tmpForm += "<div id='' class=''>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>blockHash</div>";
+				tmpForm += "   		<div id='number' class='cellField' style='font-weight:bold;'>"+data.blockHash +"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>blockNumber</div>";
+				tmpForm += "   		<div id='number' class='cellField' style='font-weight:bold;'>"+data.blockNumber+ " | "+  parseInt(data.blockNumber, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>from</div>";
+				tmpForm += "   		<div id='timestamp' class='cellField'>"+data.from +"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "	<div id='' class='content_body'>";
+				tmpForm += "		<div id='' class='cellLabel'>gas</div>";
+				tmpForm += "   		<div id='difficulty' class='cellField'>"+data.gas+ " | "+  parseInt(data.gas, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>gasPrice</div>";
+				tmpForm += "   		<div id='extraData' class='cellField'>"+data.gasPrice+ "|"+  parseInt(data.gasPrice, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "  	<div id='' class='content_body'>";
+				tmpForm += "  		<div id='' class='cellLabel'>hash</div>";
+				tmpForm += "  		<div id='gasLimit' class='cellField'>"+data.hash +"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "  		<div id='' class='cellLabel'>input</div>";
+				tmpForm += "   		<div id='gasUsed' class='cellField'>"+data.input+ " | "+  parseInt(data.input, 16)+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "  	<div id='' class='content_body'>";
+				tmpForm += "  		<div id='' class='cellLabel'>nonce</div>";
+				tmpForm += "   		<div id='gasUsed' class='cellField'>"+data.nonce+ " | "+  parseInt(data.nonce, 16)+"</div>";
+				tmpForm += "	</div>"; 
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>to</div>";
+				tmpForm += "   		<div id='miner' class='cellField'>"+data.to+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "  		<div id='' class='cellLabel'>transactionIndex</div>";
+				tmpForm += "  		<div id='mixHash' class='cellField'>"+data.transactionIndex+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>value</div>";
+				tmpForm += "   		<div id='nonce' class='cellField'>"+data.value+ " | "+  parseInt(data.value, 16)+"</div>";
+				tmpForm += "	</div>";
+
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>v</div>";
+				tmpForm += "   		<div id='parentHash' class='cellField'>"+data.v+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>r</div>";
+				tmpForm += "   		<div id='receiptsRoot' class='cellField'>"+data.r+"</div>";
+				tmpForm += "	</div>";
+
+				tmpForm += "   	<div id='' class='content_body'>";
+				tmpForm += "   		<div id='' class='cellLabel'>s</div>";
+				tmpForm += "   		<div id='sha3Uncles' class='cellField'>"+data.s+"</div>";
+				tmpForm += "	</div>";
+
+				 
+				tmpForm += "</div>";
+
+
+
+				$("#blockInfo").html(tmpForm)
+			}
+
+			function addCommas(x) {
+				x = x?x:0;
+				return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+			}
+
+		</script>
+	</head>
+	<body>
+
+		<div id="" class="wrap">
+			<div id="" class="content_wrap"> 
+				<div id="" class="content_wrap" style="margin-bottom: 30px; ">
+					<div id="" class="content_wrap" style="font-size: 22px; font-weight: bold; border-bottom: 1px solid #000; ">omcapi.net / Transactions Get</div>
+				</div>
+				<div id="trans_menu" class="content_wrap"  style="margin-bottom: 30px; "> </div> 
+			</div>
+
+			<div id="" class="content_wrap">
+				<div id="" class="content_body subtile">trans hash</div> 
+				<div id="" class="content_body">
+					<div id="" class="cellLabel ">hash</div>
+					<div id="" class="cellField">
+						<input type="text" id="transation_hash" name="hash" value="0x3e608db71e4fee739c8a109bd42c2aa4da334b55f34746852839fcc6ac976714"  style="width: 80%;" />
+						<input type="button"  id="btn_findTransation"  value=" FIND Transation"  style="margin-left: 10px;"/>
+					</div>
+				</div>
+			</div>
+		</div>	
+
+		<div id="" class="content_wrap">
+			<div id="" class="content_body subtile">최근 트랜젝션 정보</div> 
+			<div id="" class="content_body">
+				<div id="" class="cellLabel ">블록수</div>
+				<div id="blockNumber_last" class="cellField"> 	</div>
+			</div>
+
+			<div id="" class="content_body" style="top;margin-top: 20px;">
+				<div id="" class="cellLabel " style="vertical-align: top;">블록정보</div>
+				<div id="blockInfo" class="cellField"> 	</div>
+			</div>
+			<div id="" class="content_body subtile">List</div> 
+			<div id="t_list" class="content_body"></div> 
+			<!--  -->
+		</div>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,151 @@
+<html lang="en">
+<head>
+  <style type="text/css">
+    body {font-size: 12px;}
+    button{font-size: 10px;margin-top: 4px; margin-right: 20px;}
+
+    .wrap{width:96%; height: auto;display: block; }
+    .content_wrap{width:540px; height: auto;display: block; margin: 0 auto;margin-top: 20px;}
+    .content_body{width:96%; height: auto;display: block;margin: 2px 0px;  }
+    .cellLabel{width:15%; height: auto; display: inline-block; }
+    .cellField{width:83%; height: auto;display: block; display: inline-block;}
+    .cellField_btn{width:10%; height: auto;display: block; display: inline-block;}
+    .inputField{width:96%; height: auto;  }
+
+    .subtile{font-size: 12px;font-weight: bold; border-bottom: 1px solid #DADADA; padding: 4px 0px;margin: 30px 0px 4px;}
+    label
+  </style>
+  
+  <script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script> 
+  <script type="text/javascript">
+    $(function()
+    {
+
+       $("#chkMyWallet").click(function(){
+        var chk = $(this).is(":checked");//.attr('checked');
+        if(chk) 
+         $('#senderWellet').val( $('#myWallet').val()); 
+       else
+         $('#senderWellet').val(""); 
+     });
+
+       $("#btn_genWallet").on('click', function (e) 
+       {  
+
+        let wallet_Passwd = $('#wallet_Passwd').val();
+        let wallet_Passwd_comp = $('#wallet_Passwd_comp').val(); 
+
+        if(!wallet_Passwd){alert("지갑 비밀번호를 입력해 주세요. "); $('#wallet_Passwd').focus(); return false;}
+        if(!wallet_Passwd_comp){alert("지갑 비밀번호 확인을  입력해 주세요. "); $('#wallet_Passwd_comp').focus(); return false;}
+
+        if(wallet_Passwd != wallet_Passwd_comp){
+            alert("비밀번호와  비밀번호확인이 같지 않습니다.\n확인하여 주세요. "); 
+            $('#wallet_Passwd_comp').focus(); 
+            return false;
+
+          } 
+
+          setNewAccount("myAddress", wallet_Passwd)
+
+      });// $("#btn_genWallet").on('click', function (e) 
+
+       
+ });//jquery
+
+
+
+
+   function setNewAccount(divID,password)
+   {
+
+    var jURL   = "/module/personal_newAccount.php";
+    var params = { password:password};   
+
+    var returnValue = $.ajax({
+      type: "POST",
+      url: jURL,
+      data: params,
+      async: false
+    }).responseText;
+
+
+    var obj = $.parseJSON(returnValue); 
+    console.log("setNewAccount", password+" | "+returnValue )
+
+    $("#"+divID).html(obj.result)
+
+
+  }
+
+
+
+
+  function addCommas(x) {
+    x = x?x:0;
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  }
+
+</script>
+</head>
+<body>
+
+  <div id="" class="wrap">
+    <div id="" class="content_wrap"> 
+      <div id="" class="content_wrap" style="margin-bottom: 30px; ">
+        <div id="" class="content_wrap" style="font-size: 22px; font-weight: bold; border-bottom: 1px solid #000; ">omcapi.net </div>
+      </div> 
+    </div>
+
+   
+
+    <div id="" class="content_wrap">
+      <div id="" class="content_body subtile">지갑생성  </div>
+
+      <div id="" class="content_body">
+        <div id="" class="cellLabel">지갑비밀번호</div>
+        <div id="" class="cellField"><input type="password" id="walletPasswd" name="walletPasswd"  class="inputField" /></div>
+      </div>
+
+      <div id="" class="content_body">
+        <div id="" class="cellLabel">비밀번호확인</div>
+        <div id="" class="cellField"><input type="password" id="userPassword_comp" name=""userPassword_comp"  class="inputField" /></div>
+      </div>
+
+
+      <div id="pw_text" class="content_wrap" style="display: none;">
+        <div id="" class="content_body" >
+          <div id="" class="cellLabel">지갑비밀번호</div>
+          <div id="" class="cellField"><input type="text" id="wallet_Passwd" name="wallet_Passwd"  class="inputField" /></div>
+        </div>
+
+        <div id="" class="content_body">
+          <div id="" class="cellLabel">비밀번호확인</div>
+          <div id="" class="cellField"><input type="text" id=""wallet_passwd_comp" name=""walletpasswd_comp"  class="inputField" /></div>
+        </div> 
+      </div>
+
+      <div id="" class="content_body  ">  <button id="btn_genWallet" style="float: right;padding: 4px 15px;">지갑생성</button> </div>
+
+
+      <div id="" class="content_body" style="margin-top: 50px;">
+        <div id="" class="cellLabel">지갑주소</div>
+        <div id="myAddress" class="cellField" style="width: 80%;height: 22px; padding: 3px;background-color: #dadada;">  </div>
+      </div>
+
+
+
+      <div id="" class="content_body" style="color: red;font-weight: bold;margin-top: 50px;padding-top: 10px;border-top: 1px solid #000; ">
+        지갑주소를 만들기 위한 비밀번호 입력입니다.<br/>
+        주의하여 보관하시고 잃어버리지 마시기 바랍니다.
+        <br/>
+        지갑생성용 비밀번호는 저장되지 않습니다. 
+      </div> 
+
+    </div> 
+  </div> 
+</body>
+</html>

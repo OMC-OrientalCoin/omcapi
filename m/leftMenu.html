@@ -1,0 +1,63 @@
+<div id="navi" class="cell" style="padding: 30px; font-size: 16px; font-weight: bold;"> 
+	<div id="X" class="cell menu"> 로그아웃</div>
+	<div id="M" class="cell menu"> 홍길동님 | 회원정보관리 > </div>
+	<div id="W" class="cell menu"> 내지갑 | 전송내역</div>
+	<div id="ST" class="cell menu"> 코인전송 > </div>
+	<div id="GT" class="cell menu"> 코인수신 > </div>
+	<div id="OL" class="cell menu"> 거래내역확인</div>
+	<div id="H" class="cell menu"> OMC WALLET</div>
+	<div id="MM1" class="cell menu">OMC EXPLORE</div>
+	<div id="MM2" class="cell menu"> OMC PLATFORM</div>
+
+	<div id="L" class="cell menu"> 약관정책</div>
+	<div id="A" class="cell menu"> 공지사항</div>
+</div>
+
+<script type="text/javascript">
+	$(function()
+	{  
+
+		var filter = "win16|win32|win64|mac|macintel";
+
+		if ( navigator.platform ) { 
+			if ( filter.indexOf( navigator.platform.toLowerCase() ) < 0 ) { 
+					//mobile 
+					//alert('mobile 접속'); 
+				} else { 
+					//pc 
+				//	alert('pc 접속'); 
+			} 
+		}
+
+
+		$("#navi").on('click',".menu", function (e) 
+		{  
+
+			var thisID = $(this).attr('id'); 
+			var goPage ="";
+
+			switch(thisID)
+			{
+ 
+
+				case "X" : goPage 	= "/logout.php"; break;
+				case "M" : goPage 	= "m_chgMyData.html"; break; 
+				case "W" : goPage 	= "m_myWallet.html"; break; 
+				case "ST" : goPage 	= "m_sendTransaction.html"; break;
+				case "GT" : goPage 	= "m_getTransaction.html"; break;
+				case "OL" : goPage 	= "m_tx_history.html"; break;
+				case "H" : goPage 	= "index.html"; break;
+				case "MM1" : goPage = "blockdata.html"; break;
+				case "MM2" : goPage = "blockdata.html"; break;
+
+				case "L" : goPage 	= "m_law.html"; break;
+				case "A" : goPage 	= "m_notice.html"; break;
+
+			} 
+
+			 $(location).attr('href',  goPage);
+		});
+
+
+	});
+</script>

@@ -1,0 +1,174 @@
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="/css/omc_m.css" type="text/css"   rel="stylesheet">
+	<style type="text/css">
+		 body{top:0px;left:0px;width: 100%; height: 100%; position: relative; background-color:#dadada;}
+		.menu{
+			width: 94%;
+			height:20px;
+			padding: 10px;
+			margin-top: 5px;
+			background-color: #FFF;
+		}
+		.cell_d1{width: 15%; display: inline-block;}
+		.cell_d3{width: 83%; display: inline-block;}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script> 
+	<script type="text/javascript">
+		$(function()
+		{  
+			$(window).width("400px");
+
+			var filter = "win16|win32|win64|mac|macintel";
+
+			if ( navigator.platform ) { 
+				if ( filter.indexOf( navigator.platform.toLowerCase() ) < 0 ) { 
+					//mobile 
+					//alert('mobile 접속'); 
+				} else { 
+					//pc 
+				//	alert('pc 접속'); 
+			} 
+		}
+
+
+		$("#btn_left_menu").on('click', function (e) 
+		{  
+
+			$("#menu_left").load("leftMenu.html");
+
+			$( "#menu_left" ).animate({
+				//opacity: 0.9,
+				left: "+=400",
+				//height: "toggle"
+			}, 400, function() {
+			    // Animation complete.
+			});
+		});
+
+		$("#menu_left").on('click', function (e) 
+		{  
+
+			$("#menu_left").load("leftMenu.html");
+
+			$( "#menu_left" ).animate({
+				opacity: 0.9,
+				left: "-=400",
+				//height: "toggle"
+			}, 400, function() {
+			    // Animation complete.
+			});
+		}); 
+
+
+	  		omc_getTransaction("tx_list");
+ 		});//jquery 
+
+
+
+			function omc_getTransaction(divID)
+			{ 
+				var jURL   = "/module/omc_get_transaction.php";
+				var params = "";   
+				var retData = "";  
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				console.log("omc_getTransaction -->",returnValue)
+				var obj = $.parseJSON(returnValue);  
+
+				for(var i in obj) 
+				{ 
+					// console.log("transaction_hashobj[i] -->", obj[i].transaction_hash);//.transaction_hash 
+					retData = m_tx_list(obj[i].transaction_hash,obj[i].regDate)
+ 
+					$("#"+divID).append(retData)
+				}
+
+
+			}//omc_getTransaction
+
+ 
+
+	function m_tx_list(hash,regDate)
+	{
+
+
+  
+	var jURL   = "/module/eth_getTransactionByHash.php";
+	var params = { hash:hash};   
+
+	var returnValue = $.ajax({
+		type: "POST",
+		url: jURL,
+		data: params,
+		async: false
+	}).responseText;
+
+	var obj = $.parseJSON(returnValue);
+
+ 
+//var value = parseInt(obj.result.value, 16);
+	var value =  obj.result.value; 
+	value =  value.substring(2,value.length);
+
+		var tmpForm ="";
+		tmpForm +="<div id='' class=' ' style='width:90%; padding: 15px ; margin-top: 20px; background-color:#fff;'>";
+		tmpForm +="	<div id='' class=' '>";
+		tmpForm +="		<div id='' class='cell_d1'>보낸이</div>";
+		tmpForm +="		<div id='fromAddr' class='cell_d3'>OMC-"+obj.result.from+"</div>";
+		tmpForm +="	</div>";
+		tmpForm +="	<div id='' class=' '>";
+		tmpForm +="		<div id='' class='cell_d1'>받는이</div>";
+		tmpForm +="		<div id='toAddr' class='cell_d3'> OMC-"+obj.result.to+"</div>";
+		tmpForm +="	</div>";
+		tmpForm +="	<div id='' class=' '>";
+		tmpForm +="		<div id='' class='cell_d1'>수량</div>";
+		tmpForm +="		<div id='value' class='cell_d3'>"+value+" OMC</div>";
+		tmpForm +="	</div>";
+
+		tmpForm +="	<div id='' class=' '>";
+		tmpForm +="		<div id='' class='cell_d1'>거래일자</div>";
+		tmpForm +="		<div id='value' class='cell_d3'>"+ regDate+"</div>";
+		tmpForm +="	</div>";
+		tmpForm +="</div>";
+
+		return tmpForm;
+	}//login()
+
+
+</script>
+</head>
+<body>
+	<div id="menu_left" class="menu_left" style="width: 400px; height: 100%; left: -400px; top: 0px; background-color: #f6f6f6; border-left: 1px solid #DADADA; z-index: 99; position: absolute;"> 
+
+	</div>
+
+	<div id="" class="header_wrap" style="position: absolute; top: 0px; left: 0px;width: 100%; height:  70px;"> 
+		<div id="" class="header_wrap"> 
+			<div id="btn_left_menu" class="header_cell" style="width: 10%;">M</div>
+			<div id="" class="header_cell" style="width: 70%; font-size: 18px;font-weight: bold;text-align: center;">OMC transaction</div>
+			<div id="" class="header_cell" style="width: 10%;">A</div>
+		</div>  
+	</div> 
+
+	<div id="" class=" "  style="top: 100px;  padding-left: 30px;width: 96%; height: 100%; position: relative; background-color:#dadada;margin: 0 auto; ">  
+		<div id="" class="content_body subtile">transaction</div> 
+		<div id="tx_list" class="cell" style='margin:10px auto;width: 96%;  '></div> 
+	</div> 
+
+</body>
+</html>
+

@@ -1,0 +1,198 @@
+<html lang="en">
+
+<head>
+  <style type="text/css">
+    body {
+      font-size: 12px;
+    }
+
+    button {
+      font-size: 10px;
+      margin-top: 4px;
+      margin-right: 20px;
+    }
+
+    .wrap {
+      width: 96%;
+      height: auto;
+      display: block;
+    }
+
+    .content_wrap {
+      width: 540px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      margin-top: 20px;
+    }
+
+    .content_body {
+      width: 96%;
+      height: auto;
+      display: block;
+    }
+
+    .celllabel {
+      width: 15%;
+      height: auto;
+      display: inline-block;
+    }
+
+    .cellfield {
+      width: 83%;
+      height: auto;
+      display: block;
+      display: inline-block;
+    }
+
+    .cellfield_btn {
+      width: 10%;
+      height: auto;
+      display: block;
+      display: inline-block;
+    }
+
+    .inputfield {
+      width: 96%;
+      height: auto;
+    }
+
+    .subtile {
+      font-size: 12px;
+      font-weight: bold;
+      border-bottom: 1px solid #dadada;
+      padding: 4px 0px;
+      margin: 30px 0px 4px;
+    }
+
+    .navi {
+      padding: 4px 10px;
+      border: 1px solid #dadada;
+      display: inline-block;
+      cursor: pointer;
+    }
+  </style>
+
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+   
+  <script type="text/javascript"> 
+    $(function () {
+ 
+
+       $("#nodeurl").html("http://omcapi.net "); 
+
+      $("#btn_Command").on('click', function (e) {
+
+         let _command = $("#strCommand").val();
+        if (_command)
+           exec_Command("retvalue", _command)
+        else {
+          alert("_command를 입력해 주세요");
+          $("#strCommand").focus();
+
+        }
+
+
+       
+      }); 
+  
+ 
+ 
+ 
+    });//jquery
+ 
+
+    //var path = pathfunc();
+    function exec_Command(divID, param) {
+
+      var jURL = "/module/command_rcp.php";
+
+
+      var params = { param: param };
+
+      var returnValue = $.ajax({
+        type: "POST",
+        url: jURL,
+        data: params,
+        async: false
+      }).responseText;
+      console.log("list_account --->", returnValue)
+      var obj = $.parseJSON(returnValue);
+
+      $("#" + divID).html(returnValue)
+      if (obj.result instanceof Array) {
+        for (var i = 0; i < obj.result.length; i++) {
+          $("#" + divID).append(obj.result[i] + "<br>");
+        }
+      } else {
+
+        $("#" + divID).html(obj.result)
+      }
+    }
+
+
+
+    function command_exec(divid, command) {
+
+      var jurl = "./command_rcp.php";
+      var params = {method: command };
+  console.log("command_exec --->", command +jurl) 
+
+
+      $.post( jurl, params)
+        .done(function( data ) {
+          alert( "Data Loaded: " + data );
+        });
+
+    
+    }
+
+
+ 
+     
+
+ 
+
+    function addcommas(x) {
+      x = x ? x : 0;
+      return x.tostring().replace(/\b(?=(\d{3})+(?!\d))/g, ","); s
+
+    }
+
+  </script>
+</head>
+
+<body>
+
+  <div id="main" class="wrap">
+    <div id="" class="content_wrap">
+      <div id="" class="content_wrap" style="margin-bottom: 30px; ">
+        <div id="" class="content_wrap" style="font-size: 22px; font-weight: bold; border-bottom: 1px solid #000; ">
+          omcapi.net 
+        </div>
+      </div> 
+    </div>
+
+      <div id="" class="content_wrap">
+      <div id="" class="content_body subtile">명령어 </div>
+      <div id="" class="content_body"> 
+        <div id="" class="cellfield"><input type="text" id="strCommand" name="strCommand" class="inputfield" /></div>
+      </div>
+      <div id="" class="content_body  "> <button id="btn_Command" style="float: right;">실행</button> </div>
+</div>
+
+    <div id="" class="content_wrap">
+      <div id="" class="content_body subtile">결과</div>
+      <div id="" class="content_wrap">
+        <div id="retvalue" style="width: 100%;height: 400px; background-color: #eaeaea; padding: 10px; overflow-y:scroll;"></div>
+      </div>
+
+
+    </div>
+ 
+
+  </div>
+ 
+</body>
+
+</html>

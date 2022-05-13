@@ -1,0 +1,493 @@
+<html lang="en">
+
+<head>
+    <style type="text/css">
+        body {
+            font-size: 12px;
+        }
+
+        button {
+            font-size: 10px;
+            margin-top: 4px;
+            margin-right: 20px;
+        }
+
+        .wrap {
+            width: 96%;
+            height: auto;
+            display: block;
+        }
+
+        .content_wrap {
+            width: 540px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+
+        .content_body {
+            width: 96%;
+            height: auto;
+            display: block;
+        }
+
+        .cellLabel {
+            width: 15%;
+            height: auto;
+            display: inline-block;
+        }
+
+        .cellField {
+            width: 83%;
+            height: auto;
+            display: block;
+            display: inline-block;
+        }
+
+        .cellField_btn {
+            width: 10%;
+            height: auto;
+            display: block;
+            display: inline-block;
+        }
+
+        .inputField {
+            width: 96%;
+            height: auto;
+        }
+
+        .subtile {
+            font-size: 12px;
+            font-weight: bold;
+            border-bottom: 1px solid #DADADA;
+            padding: 4px 0px;
+            margin: 30px 0px 4px;
+        }
+
+        .navi {
+            padding: 4px 10px;
+            border: 1px solid #DADADA;
+            display: inline-block;
+            cursor: pointer;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/jsFunc.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+
+// Your code goes here
+let address = $("#myWallet").val();
+//let main_net = "localhost:8545"; 
+//let main_net = "ropsten.infura.io"; 
+
+$("#nodeurl").html("http://omcapi.net ");
+
+$("#btn_getbalance").on('click', function (e) {
+    let address = $("#myWallet").val();
+    if (address)
+        getBalance("getbalance", address);
+    else {
+        alert("지갑주소를 입력해 주세요");
+        $("#myWallet").focus();
+
+    }
+});
+
+
+$("#main").on('click', ".navi", function (e) {
+    var thisID = $(this).attr('id');
+    var goPage = "";
+
+    switch (thisID) {
+        case "M": goPage = "front.html"; break;
+        case "T": goPage = "transactions_list.html"; break;
+        case "P": goPage = "mypage.html"; break;
+        case "B": goPage = "blockdata.html"; break;
+        case "U": goPage = "omc_board.html"; break;
+        case "X": goPage = "logout.php"; break;
+    }
+
+    $(location).attr('href', goPage);
+});
+
+$("#btn_send").on('click', function (e) {
+    let senderWellet = $('#senderWellet').val();
+    let passphrase = $('#senderPassword').val();
+    let receiverWellet = $('#receiverWellet').val();
+    let sendAmount = $('#sendAmount').val();
+
+    if (!senderWellet) { alert("보내는이 주소를 입력해 주세요. "); $('#senderWellet').focus(); return false; }
+    if (!senderPassword) { alert("비밀번호 :를 입력해 주세요. "); $('#senderPassword').focus(); return false; }
+    if (!receiverWellet) { alert("받는이 주소를 입력해 주세요. "); $('#receiverWellet').focus(); return false; }
+    if (!sendAmount) { alert("송금 수량을 입력해 주세요. "); $('#sendAmount').focus(); return false; }
+
+    sendTransation("getBalance_after", senderWellet, passphrase, receiverWellet, sendAmount);
+
+});
+
+$("#chkMyWallet").click(function () {
+var chk = $(this).is(":checked");//.attr('checked');
+if (chk)
+    $('#senderWellet').val($('#myWallet').val());
+else
+    $('#senderWellet').val("");
+});
+
+
+
+
+$("#btn_genWallet").on('click', function (e) {
+
+    let passwd = $('#passwd').val();
+    let passwd_comp = $('#passwd_comp').val();
+
+
+    if (!passwd) { alert("비밀번호를 입력해 주세요. "); $('#passwd').focus(); return false; }
+    if (!passwd_comp) { alert("비밀번호 확인을  입력해 주세요. "); $('#passwd_comp').focus(); return false; }
+
+    if (passwd != passwd_comp) { alert("비밀번호와  비밀번호확인이 같지 않습니다.\n확인하여 주세요. "); $('#passwd_comp').focus(); return false; }
+
+    setNewAccount("myAddress", passwd)
+
+});// $("#btn_genWallet").on('click', function (e) 
+
+
+list_account("retvalue", "list")
+});//jquery
+
+//var path = pathfunc();
+function list_account(divID, param) {
+
+    var jURL = "/module/eth_accounts.php";
+
+
+    var params = { param: param };
+
+    var returnValue = $.ajax({
+        type: "POST",
+        url: jURL,
+        data: params,
+        async: false
+    }).responseText;
+
+    console.log("list_account --->", returnValue)
+
+    var obj = $.parseJSON(returnValue);
+
+    $("#" + divID).html("")
+    if (obj.result instanceof Array) {
+        for (var i = 0; i < obj.result.length; i++) {
+            $("#" + divID).append(obj.result[i] + "<br>");
+        }
+    } else {
+
+        $("#" + divID).html(obj.result)
+    }
+}
+
+
+
+function getBalance(divID, address) {
+
+    var jURL = "/module/getBalance.php";
+    var params = { address: address };
+
+    var returnValue = $.ajax({
+        type: "POST",
+        url: jURL,
+        data: params,
+        async: false
+    }).responseText;
+
+    console.log(returnValue)
+
+    var obj = $.parseJSON(returnValue);
+
+//var balance = parseInt(obj.result, 16);   
+/* var balance = parseInt(obj.result, 16);   
+$("#"+divID).html(obj.result);*/
+var balance = obj.result;
+//balance =  balance.substring(2, balance.length);
+// balance = web3.fromWei(wei, 'ether');
+balance = balance / 1000000000000000000;
+balance = addCommas(balance);
+
+
+$("#" + divID).html(balance)
+}
+
+function setNewAccount(divID, password) {
+
+    var jURL = "/module/personal_newAccount.php";
+    var params = {password:password};
+    alert(password)
+
+    var returnValue = $.ajax({
+        type: "POST",
+        url: jURL,
+        data: params,
+        async: false
+    }).responseText;
+
+    console.log("setNewAccount --->", returnValue)
+    $("#retvalueRRRR").html(returnValue)
+
+    var obj = $.parseJSON(returnValue);
+
+    $("#" + divID).html("")
+    if (obj.result instanceof Array) {
+        for (var i = 0; i < obj.result.length; i++) {
+            $("#" + divID).append(obj.result[i] + "<br>");
+        }
+    } else {
+
+        $("#" + divID).html(obj.result)
+    }
+
+    list_account("retvalue", "list")
+}//func
+
+
+function sendTransation(divID, from, passphrase, to, value) {
+
+    let lock_state = unlock(from, passphrase);
+
+    if (lock_state) {
+        var jURL = "/module/transaction.php";
+
+    
+ console.log("sendTransation  -->", divID+" |from " + from+" |passphrase " + passphrase+" |to " + to+" |value " +value+" |lock_state " +lock_state)
+
+        var sendAmount_Hex = "0x" + value.toString(16); // === "7b" 
+        value = value * 1000000000000000000;
+        var sendAmount_Hex = "0x" + value.toString(16); // === "7b" 
+
+        console.log("value", sendAmount_Hex);
+
+
+        var params = { from: from, to: to, value: sendAmount_Hex };
+
+        var returnValue = $.ajax({
+            type: "POST",
+            url: jURL,
+            data: params,
+            async: false
+        }).responseText;
+
+        console.log("송금 -->", returnValue)
+        var obj = $.parseJSON(returnValue);
+
+        $.post("/module/set_transaction_omc.php", { tx_hash: obj.result })
+        .done(function (retdata) {
+            console.log("set_transaction_omc  -->", retdata);
+        });
+
+
+        $("#" + divID).html(obj.result);
+
+        lock(from);
+
+        alert("송금되었습니다.")
+
+        getBalance("getBalance_after", from)
+
+    } else {
+        alert("error code u001")
+    }
+
+}//sendTransation
+
+
+function unlock(address, passphrase) {
+
+
+    var jURL = "/module/unlock.php";
+    var params = { address: address, passphrase: passphrase };
+
+    var returnValue = $.ajax({
+        type: "POST",
+        url: jURL,
+        data: params,
+        async: false
+    }).responseText;
+
+    var obj = $.parseJSON(returnValue);
+
+
+    console.log("unlock", address + " | " + passphrase + " | " + returnValue + " | " + obj.result);
+
+    return obj.result;
+
+}//unlock
+
+function lock(address) {
+
+
+    var jURL = "/module/lock.php";
+    var params = { address: address };
+
+    var returnValue = $.ajax({
+        type: "POST",
+        url: jURL,
+        data: params,
+        async: false
+    }).responseText;
+
+    var obj = $.parseJSON(returnValue);
+
+
+    console.log("unllockock", address + " |  " + returnValue + " | " + obj.result);
+
+    return obj.result;
+
+}//lock
+
+function addCommas(x) {
+    x = x ? x : 0;
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); s
+
+}//addCommas
+
+</script>
+</head>
+
+<body>
+
+    <div id="main" class="wrap">
+        <div id="" class="content_wrap">
+            <div id="" class="content_wrap" style="margin-bottom: 30px; ">
+                <div id="" class="content_wrap" style="font-size: 22px; font-weight: bold; border-bottom: 1px solid #000; ">
+                omcapi.net </div>
+            </div>
+
+            <div id="" class="content_body" style="margin-bottom: 30px; ">
+                <div id="M" class="navi">매니져</div>
+                <div id="P" class="navi">마이페이지</div>
+                <div id="B" class="navi">블록정보</div>
+                <div id="T" class="navi">트랜잭션목록</div>
+                <div id="U" class="navi">회원관리</div>
+                <div id="X" class="navi">로그아웃</div>
+            </div>
+
+            <div id="" class="content_body  ">
+                <div id="" class="cellLabel subtile">노드URL</div>
+                <div id="nodeurl" class="cellField subtile"> </div>
+            </div>
+
+
+        </div>
+
+        <div id="" class="content_wrap">
+            <div id="" class="content_body subtile">지갑주소목록</div>
+            <div id="" class="content_wrap">
+                <div id="retvalue"
+                style="width: 100%;height: 200px; background-color: #eaeaea; padding: 10px; overflow-y:scroll;"></div>
+            </div>
+
+
+        </div>
+
+        <div id="" class="content_wrap">
+            <div id="" class="content_body subtile">잔고 확인 </div>
+            <div id="" class="content_body">
+                <div id="" class="cellLabel ">내 지갑주소</div>
+                <div id="" class="cellField"><input type="text" id="myWallet" name="myWallet" class="inputField" /></div>
+            </div>
+
+
+            <div id="" class="content_body">
+                <div id="" class="cellLabel">잔고 :</div>
+                <div id="getbalance" class="cellField"> </div>
+            </div>
+            <div id="" class="content_body  "> <button id="btn_getbalance" style="float: right;">잔고확인</button> </div>
+        </div>
+
+
+
+        <div id="" class="content_wrap">
+            <div id="" class="content_body subtile">송금<input type="checkbox" id="chkMyWallet" name="senderWellet" /> 내 주소이용
+            </div>
+            <div id="" class="content_body">
+                <div id="" class="cellLabel">보내는이 :</div>
+                <div id="" class="cellField">
+                    <input type="text" id="senderWellet" name="senderWellet" class="inputField" />
+
+                </div>
+            </div>
+
+            <div id="" class="content_body">
+                <div id="" class="cellLabel">비밀번호 :</div>
+                <div id="" class="cellField">
+                    <input type="password" id="senderPassword" name="senderPassword" class="inputField" />
+
+                </div>
+            </div>
+
+            <div id="" class="content_body">
+                <div id="" class="cellLabel">받는 이 :</div>
+                <div id="" class="cellField"><input type="text" id="receiverWellet" name="receiverWellet" class="inputField" />
+                </div>
+            </div>
+
+            <div id="" class="content_body">
+                <div id="" class="cellLabel">수량 :</div>
+                <div id="" class="cellField"><input type="text" id="sendAmount" name="sendAmount" class="inputField" /></div>
+            </div>
+            <div id="" class="content_body  "> <button id="btn_send" style="float: right;">보내기</button> </div>
+            <div id="retMsg" class="content_body"></div>
+
+        </div>
+
+        <div id="" class="content_wrap">
+            <div id="" class="content_body subtile">거래내역 </div>
+            <div id="" class="content_body">
+                <div id="" class="cellLabel">송금 후 잔고</div>
+                <div id="getBalance_after" class="cellField"></div>
+            </div>
+        </div>
+
+
+        <div id="" class="content_wrap">
+            <div id="" class="content_body subtile">지갑생성 </div>
+
+            <div id="" class="content_body">
+                <div id="" class="cellLabel">아이디</div>
+                <div id="" class="cellField"><input type="text" id="userID" name="userID" class="inputField" /></div>
+            </div>
+
+            <div id="" class="content_body">
+                <div id="" class="cellLabel">비밀번호</div>
+                <div id="" class="cellField"><input type="text" id="passwd" name="passwd" class="inputField" /></div>
+            </div>
+
+            <div id="" class="content_body">
+                <div id="" class="cellLabel">비밀번호확인</div>
+                <div id="" class="cellField"><input type="text" id="passwd_comp" name="passwd_comp" class="inputField" /></div>
+            </div>
+
+            <div id="" class="content_body  "> <button id="btn_genWallet" style="float: right;">지갑생성</button> </div>
+            <div id="" class="content_body" style="color: red;font-weight: bold;">
+                지갑주소를 만들기 위한 비밀번호 입력입니다. 주의하여 보관하시고 잃어버리지 마시기 바랍니다.
+            </div>
+            <div id="" class="content_body" style="margin-top: 30px;">
+                <div id="" class="cellLabel">지갑주소</div>
+                <div id="myAddress" class="cellField"> </div>
+            </div>
+        </div>
+
+        <div id="" class="content_wrap">
+            <div id="" class="content_body subtile">json</div>
+            <div id="" class="wrap">
+                <div id="retvalueRRRR" class="content_body" style="background-color: #DADADA; height:200px; scroll:auto;"></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

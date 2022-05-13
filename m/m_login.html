@@ -1,0 +1,233 @@
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="/css/omc_m.css" type="text/css"   rel="stylesheet">
+	<style type="text/css">
+		.menu{
+			width: 94%;
+			height:20px;
+			padding: 10px;
+			margin-top: 5px;
+			background-color: #FFF;
+		}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- 
+	<script language="JavaScript">
+		<!--
+			top.window.moveTo(0,0);
+			if (document.all) {
+				top.window.resizeTo(screen.availWidth,screen.availHeight);
+			}
+			else if (document.layers||document.getElementById) {
+				if (top.window.outerHeight<screen.availHeight||top.window.outerWidth<screen.availWidth){
+					top.window.outerHeight = screen.availHeight;
+					top.window.outerWidth = screen.availWidth;
+				}
+			}
+//- ->
+</script> -->
+<script
+src="https://code.jquery.com/jquery-3.4.1.min.js"
+integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+crossorigin="anonymous"></script> 
+<script type="text/javascript">
+	//window.resizeTo(newWidth, newHeight) 
+
+ 
+	$(function()
+	{  
+
+		var filter = "win16|win32|win64|mac|macintel";
+
+		if ( navigator.platform ) { 
+			if ( filter.indexOf( navigator.platform.toLowerCase() ) < 0 ) { 
+					//mobile 
+					//alert('mobile 접속'); 
+				} else { 
+					//pc 
+				//	alert('pc 접속'); 
+			} 
+		}
+
+
+		$("#btn_left_menu").on('click', function (e) 
+		{  
+
+			$("#menu_left").load("leftMenu.html");
+
+			$( "#menu_left" ).animate({
+				//opacity: 0.9,
+				left: "+=400",
+				//height: "toggle"
+			}, 400, function() {
+			    // Animation complete.
+			});
+		});
+
+		$("#menu_left").on('click', function (e) 
+		{  
+
+			$("#menu_left").load("leftMenu.html");
+
+			$( "#menu_left" ).animate({
+				opacity: 0.9,
+				left: "-=400",
+				//height: "toggle"
+			}, 400, function() {
+			    // Animation complete.
+			});
+		});
+
+
+
+
+		$("#btn_login").on('click', function (e) 
+		{   
+			let userID = $('#userID').val();
+			let userPassword = $('#userPassword').val();
+
+			if(!userID){alert("아이디를  입력해 주세요. "); $('#userID').focus(); return false;}
+			if(!userPassword){alert("비밀번호를 입력해 주세요. "); $('#userPassword').focus(); return false;} 
+
+			login(userID,userPassword);
+
+
+	  		});// $("#btn_genWallet").on('click', function (e)  
+
+		$("#btn_join").on('click', function (e) 
+		{   
+			//회원가입 
+			$(location).attr('href',"m_joinForm.html");
+
+	  		});// $("#btn_genWallet").on('click', function (e) 
+
+			//alert(" 아이디찾기 이동 ");  
+			$("#btn_findID").on('click', function (e) 
+			{   
+				$(location).attr('href',"m_findID.html");
+	  		});//  
+
+			//
+			$("#btn_findPasswd").on('click', function (e) 
+			{    	
+				$(location).attr('href',"m_findPW.html");
+	  		});//  
+ 		});//jquery 
+
+
+	function setCookie(cookieName, value, exdays){
+		var exdate = new Date();
+		exdate.setDate(exdate.getDate() + exdays);
+		var cookieValue = escape(value) + ((exdays==null) ? "" : "; expires=" + exdate.toGMTString());
+		document.cookie = cookieName + "=" + cookieValue;
+	}//setCookie
+
+	function deleteCookie(cookieName){
+		var expireDate = new Date();
+		expireDate.setDate(expireDate.getDate() - 1);
+		document.cookie = cookieName + "= " + "; expires=" + expireDate.toGMTString();
+	}//deleteCookie
+
+	function getCookie(cookieName) 
+	{
+
+		cookieName = cookieName + '=';
+		var cookieData = document.cookie;
+		var start = cookieData.indexOf(cookieName);
+		var cookieValue = '';
+
+		if(start != -1){
+			start += cookieName.length;
+			var end = cookieData.indexOf(';', start);
+			if(end == -1)end = cookieData.length;
+			cookieValue = cookieData.substring(start, end);
+		}
+		return unescape(cookieValue);
+	}
+
+	function login(userID,userPW)
+	{
+
+		//var kind = $(':radio[name="kind"]:checked').val(); 
+		let params = { "userID":userID,"userPassword":userPW};
+		let goURL = "";
+
+		var returnValue = $.ajax({
+			type: "POST",
+			url: "/module/login.php",
+			data: params,
+			async: false
+		}).responseText; 
+
+		console.log("login -->",returnValue)
+
+		if(Number(returnValue) > 0 )
+		{  
+			 
+				goURL = "m_myWallet.html";
+			 
+
+			$(location).attr('href', goURL);
+
+		}else{ 
+			alert("Login Error\n로그인 정보를 확인하시거나 관리자에게 문의하여 주십시요.");
+			return false;
+		}
+	}//login()
+
+
+</script>
+</head>
+<body onresize="parent.resizeTo(500,400)" onload="parent.resizeTo(500,400)">
+	<div id="menu_left" class="menu_left" style="width: 400px; height: 100%; left: -400px; top: 0px; background-color: #f6f6f6; border-left: 1px solid #DADADA; z-index: 99; position: absolute;"> 
+
+	</div>
+
+	<div id="" class="header_wrap" style="position: absolute; top: 0px; left: 0px;width: 100%; height: 170px;"> 
+		<div id="" class="header_wrap"> 
+			<div id="" class="header_cell" style="width: 10%;"></div>
+			<div id="" class="header_cell" style="width: 70%; font-size: 18px;font-weight: bold;text-align: center;">ORIENTAL COIN</div>
+			<div id="" class="header_cell" style="width: 10%;"></div>
+		</div> 
+
+		<div id="" class="header_wrap" style="margin-top:20px;padding-left: 30px; "> 
+			<div id="" class="cell" style=""> 
+				<div id="" class="cell" style="width: 70%; font-size: 22px;font-weight: bold;">WELCOME !! ORIENTAL COIN</div>
+				<div id="" class="cell"  ></div>
+			</div>
+
+		</div> 
+	</div> 
+
+	<div id="" class=" "  style="top: 240px;  padding-left: 30px; position: relative;">
+		<div id="" class="cell subtile" style="font-size: 18px; font-weight: bold;  margin-top: 10px;">로그인  </div>
+
+		<div id="" class="cell" style=" margin-top: 20px;">
+			<div id="" class="cell">아이디</div>
+			<div id="" class="cell"><input type="text" id="userID" name="userID"  class="inputField" /></div>
+		</div>
+
+		<div id="" class="cell" style=" margin-top: 20px;">
+			<div id="" class="cell">비밀번호</div>
+			<div id="" class="cell"><input type="password" id="userPassword" name="userPassword"  class="inputField" /></div>
+		</div> 
+
+		<div id="" class="cell" style=" text-align: center;  margin: 20px 0px;" > 
+			<button id="btn_login" class="inputField cell" style="font-size: 14px; text-align: center;  background-color: #1e7aff;color: #FFF;width: 90%;padding: 7px 0px;" > 로그인 </button>
+		</div> 
+
+
+		<div id="" class="cell" style="    margin-top: 20px; border-top: 1px solid #DADADA; " > 
+			<div id="btn_join" class="cellField_btn"  style="display: inline-block;" >회원가입</div>
+			<div id="" class="" style="width:  200px;display: inline-block;" > &nbsp;</div>
+			<div id="btn_findID" class="cellField_btn"  style="display: inline-block;">아이디찾기</div> |
+			<div id="btn_findPasswd" class="cellField_btn"  style="display: inline-block;">비밀번호찾기 </div>
+
+		</div> 
+	</div> 
+
+
+</body>
+</html>
+

@@ -1,0 +1,201 @@
+	<html lang="en">
+	<head>
+
+		<link rel="stylesheet" href="css/omc.css" type="text/css"   rel="stylesheet">
+		<script
+		src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script> 
+		<script type="text/javascript">
+			$(function()
+			{ 
+				
+				$('#trans_menu').load("trans_menu.html");  
+				//blockInfoFunc("blockNumber_lastNumber")
+				omc_getTransaction("transaction_list");
+
+			});//jquery
+
+
+			/*setInterval(function() { 
+				getTransactionList("transaction_list");
+					
+			}, 1000);*/
+
+
+			 /* alert(path)
+			 document.location.href.match(/(?<=https?:\/\/)(.*?)(?=$|[\/?\&])/)[*/
+
+			 // 1 블럭번호 
+			 function blockInfoFunc(divID)
+			 {  
+
+				//var path = pathfunc();
+
+				var jURL   = "/module/getBlockNumber.php";
+				var params = { param:""};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				var obj = $.parseJSON(returnValue);  
+
+				// catch blockNumber
+				var blockNumber = parseInt(obj.result, 16);
+
+				$("#"+divID).html(blockNumber);
+
+				//getTransactionList("transaction_list", dec)
+
+				eth_getBlockByNumber(obj.result)
+
+			}//blockInfo
+
+function getBalance(divID,address )
+	{  
+		var jURL   = "/m/module/eth_getBalance.php";
+		var params = { address:address};   
+
+		var returnValue = $.ajax({
+			type: "POST",
+			url: jURL,
+			data: params,
+			async: false
+		}).responseText;
+
+		console.log("getBalance ",returnValue)
+		var obj = $.parseJSON(returnValue);  
+		//var balance = parseInt(obj.result, 16);   
+		$("#"+divID).html(obj.result);
+	
+	}//getBalance()
+
+			function omc_getTransaction(divID)
+			{ 
+				var jURL   = "/module/omc_get_transaction.php";
+				var params = "";   
+				var retData = "";  
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+ console.log("omc_getTransaction -->",returnValue)
+				var obj = $.parseJSON(returnValue);  
+
+				for(var i in obj) 
+				{  
+					 retData = eth_getTransactionByBlockHash(obj[i].transaction_hash, obj[i].regDate);
+ console.log("omc_getTransaction -->",i+" | "+retData)
+					$("#"+divID).append(retData)
+				}
+
+
+			}//omc_getTransaction
+
+
+function eth_getTransactionByBlockHash(hash,regDate)
+{    
+	var jURL   = "/module/eth_getTransactionByHash.php";
+	var params = {hash:hash};   
+ 
+	var returnValue = $.ajax({
+		type: "POST",
+		url: jURL,
+		data: params,
+		async: false
+	}).responseText; 
+ 
+	var obj = $.parseJSON(returnValue);  
+
+	//console.log(" eth_getTransactionByBlockHashAndIndex  ", hash+" <br /> "+ returnValue+" <br /> "+obj.result ) 
+var result =  obj.result ;  
+
+//console.log("tran hash 222 -->", hash+" | "+  returnValue+" | "+  result);//.transaction_hash 
+console.log("tran hash obj.result.value -->",  obj.result  );//.transaction_hash 
+
+ 
+let tmpForm ="";
+ 
+
+if(result == null){
+	tmpForm ="";
+}else{
+	
+	//value =  value.substring(2, obj.result.value.length);
+	
+	
+	tmpForm += "<div style='width: 100%;height: 44px; border-bottom:1px solid #dadada; padding: 10px; '>";
+	tmpForm += "       <div id='' class='' style='width: 100%;display:  block;'>";
+	tmpForm += "          <div id='' class=' ' style='width: 5%;display: inline-block;'>TX</div>";
+	tmpForm += "          <div id='userID' class='' style='width: 52%;display: inline-block;'>"+hash+"</div>";
+	tmpForm += "          <div id='userID' cclass='' style='width: 40%;display: inline-block; text-align: right;'>"+ regDate+"</div>";
+	tmpForm += "        </div>  ";
+
+	tmpForm += "        <div id='' class=''>";
+	tmpForm += "          <div id='fromAddr' class='' style='width: 38%;display: inline-block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;'>F : OMC-"+obj.result.from+"</div> ";
+	tmpForm += "          <div id='toAddr' class='' style='width: 38%;display: inline-block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;'>T :  OMC-"+obj.result.to+"</div>";
+	tmpForm += "          <div id='' class='' style='width: 5%;display: inline-block;'> </div>";
+	tmpForm += "          <div id='' class='' style='width: 15%;display: inline-block; text-align:right;'>"+parseInt(obj.result.value, 16)+" OMC</div>";
+	tmpForm += "    </div>  ";  
+	tmpForm += "</div> ";
+
+console.log("tmpForm -->",  tmpForm  );
+}
+	return  tmpForm;
+
+}
+
+function getTransactionList(divID,BlockNumber)
+{   
+	let retHashData =""; 
+
+	for(var i= BlockNumber; i > parseInt(BlockNumber - 10);i--)
+	{   
+		retHashData = eth_getBlockByNumber(i);
+
+				}//for
+
+
+				$("#"+divID).append(retHashData)
+			}//getTransactionList
+
+
+
+
+			function addCommas(x) {
+				x = x?x:0;
+				return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+			}
+
+		</script>
+	</head>
+
+	<body>
+
+		<div id="trans" class="wrap">
+			<div id="" class="content_wrap"> 
+				<div id="" class="content_wrap" style="margin-bottom: 30px; ">
+					<div id="" class="content_wrap" style="font-size: 22px; font-weight: bold; border-bottom: 1px solid #000; ">omcapi.net / Transactions</div>
+				</div>
+				<div id="trans_menu" class="content_wrap"  style="margin-bottom: 30px; "> </div>  
+
+
+			</div>
+
+			<div id="" class="content_wrap">
+				<div id="" class="content_body subtile">transaction list</div>   
+				<div id="transaction_list" class="content_body"></div> 
+			</div>
+		</div>
+
+	</body>
+	</html>

@@ -1,0 +1,406 @@
+<?php
+@session_start(); 
+define("USERID",  @$_SESSION['userID']);
+define("WALLET",  @$_SESSION['userWallet']);
+?>
+<html lang="en">
+<head>
+	<style type="text/css">
+		body {font-size: 12px;}
+		button{font-size: 10px;margin-top: 4px; margin-right: 20px;}
+
+		.wrap{width:96%; height: auto;display: block; }
+		.content_wrap{width:540px; height: auto;display: block; margin: 0 auto;margin-top: 20px;}
+		.content_body{width:96%; height: auto;display: block;  }
+		.cellLabel{width:15%; height: auto; display: inline-block; }
+		.cellField{width:83%; height: auto;display: block; display: inline-block;}
+		.cellField_btn{width:10%; height: auto;display: block; display: inline-block;}
+		.inputField{width:96%; height: auto;  }
+
+		.subtile{font-size: 12px;font-weight: bold; border-bottom: 1px solid #DADADA; padding: 4px 0px;margin: 30px 0px 4px;}
+		.navi {padding: 4px 10px; border : 1px solid #DADADA; display: inline-block;cursor: pointer;}
+	</style>
+
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script> 
+	<script type="text/javascript">
+		$(function()
+		{
+       // Your code goes here
+       let userID = "<?=USERID;?>"; 
+       let MyWalletAddress = "<?=WALLET;?>";
+
+       $("#userID").html(userID);
+       if(MyWalletAddress)
+       {
+       	$("#makeWallet").hide();
+       	$("#MyWalletAddress").html(MyWalletAddress);
+       }
+
+
+       
+       $("#btn_send").on('click', function (e) 
+       {  
+       	let senderWellet = $('#senderWellet').val(); 
+       	let passphrase = $('#senderPassword').val();
+       	let receiverWellet = $('#receiverWellet').val();
+       	let sendAmount = $('#sendAmount').val();
+
+       	if(!senderWellet){alert("보내는이 주소를 입력해 주세요. "); $('#senderWellet').focus(); return false;}
+       	if(!senderPassword){alert("비밀번호 :를 입력해 주세요. "); $('#senderPassword').focus(); return false;}
+       	if(!receiverWellet){alert("받는이 주소를 입력해 주세요. "); $('#receiverWellet').focus(); return false;}
+       	if(!sendAmount){alert("송금 수량을 입력해 주세요. ");$('#sendAmount').focus(); return false;} 
+
+       	sendTransation("getBalance_after",senderWellet,passphrase,receiverWellet,sendAmount);
+
+       });
+
+       $("#logout").on('click', function (e) 
+       {
+       	$(location).attr('href', "logout.php");
+       });
+
+       $("#btn_makeWallet").on('click', function (e) 
+       {
+        	//alert("송지갑주소 생성");
+        	$("#makewallet_div").show();
+
+        });
+
+       $("#btn_genWallet").on('click', function (e) 
+       {  
+
+       	let wallet_Passwd = $('#wallet_Passwd').val();
+       	let wallet_Passwd_comp = $('#wallet_Passwd_comp').val(); 
+
+       	if(!wallet_Passwd){alert("지갑 비밀번호를 입력해 주세요. "); $('#wallet_Passwd').focus(); return false;}
+       	if(!wallet_Passwd_comp){alert("지갑 비밀번호 확인을  입력해 주세요. "); $('#wallet_Passwd_comp').focus(); return false;}
+
+       	if(wallet_Passwd != wallet_Passwd_comp){
+       		alert("비밀번호와  비밀번호확인이 같지 않습니다.\n확인하여 주세요. "); 
+       		$('#wallet_Passwd_comp').focus(); 
+       		return false;
+
+       	} 
+
+       	setNewAccount("myAddress", wallet_Passwd)
+
+      });// $("#btn_genWallet").on('click', function (e) 
+
+
+
+       $("#chkMyWallet").click(function()
+       {
+        var chk = $(this).is(":checked");//.attr('checked');
+        if(chk) 
+        	$('#senderWellet').val( MyWalletAddress); 
+        else
+        	$('#senderWellet').val(""); 
+    });
+       
+
+      //getMyWallet("MyWalletAddress );
+      getBalance("getbalance",MyWalletAddress );
+ });//jquery
+
+
+		function setNewAccount(divID,password)
+		{
+
+			var jURL   = "/module/personal_newAccount.php";
+			var params = { password:password};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText;
+
+
+			var obj = $.parseJSON(returnValue); 
+			console.log("setNewAccount", password+" | "+returnValue )
+
+			$("#"+divID).html(obj.result) 
+
+		}
+
+		
+		function list_account(divID,param )
+		{  
+
+			var jURL   = "/module/c.php";
+			var params = { param:param};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText;
+
+			var obj = $.parseJSON(returnValue); 
+
+			$("#"+divID).html("")
+			if(obj.result instanceof Array)
+			{
+				for(var i=0;i<obj.result.length;i++){  
+					$("#"+divID).append( obj.result[i]+"<br>");
+				}
+			}else{
+
+				$("#"+divID).html(obj.result)
+			}
+		}  
+
+		
+		function getBalance(divID,address )
+		{
+
+			var jURL   = "/module/getBalance.php";
+			var params = { address:address};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText;
+
+			var obj = $.parseJSON(returnValue); 
+
+			var balance = parseInt(obj.result, 16);  
+
+			$("#"+divID).html(balance)
+		}
+
+		function setNewAccount(divID,password)
+		{
+
+			var jURL   = "personal_newAccount.php";
+			var params = { password:password};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText;
+
+
+			var obj = $.parseJSON(returnValue); 
+			console.log("setNewAccount", password+" | "+returnValue )
+
+			$("#"+divID).html(obj.result)
+
+			list_account("retvalue","list" ) 
+		}
+
+
+		function sendTransation(divID,from,passphrase,to,value)
+		{
+
+			let lock_state = unlock( from,passphrase);
+
+			if(lock_state)
+			{
+				var jURL   = "transaction.php";
+      var sendAmount_Hex = "0x"+value.toString(16); // === "7b" 
+      console.log("sendAmount_Hex",  sendAmount_Hex)
+      var params = { from:from,to:to,value:sendAmount_Hex};   
+
+      var returnValue = $.ajax({
+      	type: "POST",
+      	url: jURL,
+      	data: params,
+      	async: false
+      }).responseText;
+
+
+      var obj = $.parseJSON(returnValue); 
+
+      $("#"+divID).html(obj.result);
+
+      lock(from);
+
+      alert("송금되었습니다.")
+
+      getBalance("getBalance_after",from )
+
+  }else{
+  	alert("error code u001")
+  }
+
+}
+
+
+function unlock( address,passphrase)
+{  
+
+
+	var jURL   = "unlock.php";
+	var params = {  address:address,passphrase:passphrase};   
+
+	var returnValue = $.ajax({
+		type: "POST",
+		url: jURL,
+		data: params,
+		async: false
+	}).responseText; 
+
+	var obj = $.parseJSON(returnValue);  
+
+
+	console.log("unlock", address+" | "+passphrase+" | "+returnValue +" | "+ obj.result  );
+
+	return obj.result;
+
+} 
+
+function lock( address)
+{  
+
+
+	var jURL   = "lock.php";
+	var params = {  address:address};   
+
+	var returnValue = $.ajax({
+		type: "POST",
+		url: jURL,
+		data: params,
+		async: false
+	}).responseText; 
+
+	var obj = $.parseJSON(returnValue);  
+
+
+	console.log("unllockock", address+" |  "+returnValue +" | "+ obj.result  );
+
+	return obj.result;
+
+} 
+
+
+
+function addCommas(x) {
+	x = x?x:0;
+	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+}
+
+</script>
+</head>
+<body>
+
+	<div id="" class="wrap">
+		<div id="" class="content_wrap"> 
+			<div id="" class="content_wrap" style="margin-bottom: 30px; ">
+				<div id="" class="content_wrap" style="font-size: 22px; font-weight: bold; border-bottom: 1px solid #000; ">omcapi.net </div>
+			</div> 
+		</div> 
+	</div> 
+	<div id="" class="content_wrap">
+		<div id="" class="content_body">
+			<div id="btn_makeWallet" class="navi">지갑주소 생성</div>
+			<div id="logout" class="navi">로그아웃</div> 
+		</div>
+	</div>
+
+
+
+
+	<div id="makewallet_div" class="content_wrap" style="display: none;">
+
+		<div id="" class="content_body subtile">지갑생성  </div>
+		<div id="" class="content_body" >
+			<div id="" class="cellLabel">지갑비밀번호</div>
+			<div id="" class="cellField"><input type="text" id="wallet_Passwd" name="wallet_Passwd"  class="inputField" /></div>
+		</div>
+
+		<div id="" class="content_body">
+			<div id="" class="cellLabel">비밀번호확인</div>
+			<div id="" class="cellField"><input type="text" id=""wallet_passwd_comp" name=""walletpasswd_comp"  class="inputField" /></div>
+		</div> 
+
+
+		<div id="" class="content_body  ">  <button id="btn_genWallet" style="float: right;padding: 4px 15px;">지갑생성</button> </div>
+
+
+		<div id="" class="content_body" style="margin-top: 50px;">
+			<div id="" class="cellLabel">지갑주소</div>
+			<div id="myAddress" class="cellField" style="width: 80%;height: 22px; padding: 3px;background-color: #dadada;">  </div>
+		</div>
+
+
+
+		<div id="" class="content_body" style="color: red;font-weight: bold;margin-top: 50px;padding-top: 10px;border-top: 1px solid #000; ">
+			지갑주소를 만들기 위한 비밀번호 입력입니다.<br/>
+			주의하여 보관하시고 잃어버리지 마시기 바랍니다.
+			<br/>
+			지갑생성용 비밀번호는 저장되지 않습니다. 
+		</div> 
+
+	</div> 
+
+
+	<div id="" class="content_wrap">
+		<div id="" class="content_body subtile">회원정보</div> 
+		<div id="" class="content_body">
+			<div id="" class="cellLabel ">아이디</div>
+			<div id="userID" class="cellField"></div>
+		</div>  
+		<div id="" class="content_body">
+			<div id="" class="cellLabel ">내 지갑주소</div>
+			<div id="MyWalletAddress" class="cellField"> </div>
+		</div>  
+		<div id="" class="content_body">
+			<div id="" class="cellLabel">잔고 :</div>
+			<div id="getbalance" class="cellField"> </div>
+		</div>  
+	</div> 
+	<div id="" class="content_wrap">
+		<div id="" class="content_body subtile">송금<input type="checkbox" id="chkMyWallet" name="senderWellet" /> 내 주소이용</div>
+		<div id="" class="content_body">
+			<div id="" class="cellLabel">내 지갑 :</div>
+			<div id="" class="cellField">
+				<input type="text" id="senderWellet" name="senderWellet" class="inputField" />
+
+			</div>
+		</div>
+
+		<div id="" class="content_body">
+			<div id="" class="cellLabel">비밀번호 :</div>
+			<div id="" class="cellField">
+				<input type="password" id="senderPassword" name="senderPassword" class="inputField" />
+
+			</div>
+		</div>
+
+		<div id="" class="content_body" style="margin-top: 10px;">
+			<div id="" class="cellLabel">받는 이 :</div>
+			<div id="" class="cellField"><input type="text" id="receiverWellet" name="receiverWellet" class="inputField"  /></div>  
+		</div> 
+
+		<div id="" class="content_body">
+			<div id="" class="cellLabel">수량 :</div>
+			<div id="" class="cellField"><input type="text" id="sendAmount" name="sendAmount" class="inputField"  /></div>
+		</div>
+		<div id="" class="content_body  ">  <button id="btn_send" style="float: right;">보내기</button> </div>
+		<div id="retMsg" class="content_body"></div>
+
+	</div>
+
+	<div id="" class="content_wrap">
+		<div id="" class="content_body subtile">거래내역   </div>
+		<div id="" class="content_body">
+			<div id="getBalance_after" class="cellField1">
+				<div id="getTransaction_list"   style="width: 100%;height: 200px; background-color: #eaeaea; padding: 10px; overflow-y:scroll;"></div>
+			</div>
+		</div>
+	</div>  
+</div>
+
+</body>
+</html>
